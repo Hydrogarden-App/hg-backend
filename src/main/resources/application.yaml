@@ -1,0 +1,33 @@
+hydrogarden:
+  service-name: hg-backend
+  mysql:
+    host: localhost
+    port: 3306
+    username: root
+    password: root
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${hydrogarden.mysql.host}:${hydrogarden.mysql.port}/${hydrogarden.service-name}
+    password: ${hydrogarden.mysql.password}
+    username: ${hydrogarden.mysql.username}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: always
+  flyway:
+    enabled: true
+    locations:
+      - classpath:db/migration/ddl
+      - classpath:db/migration/dml
+    baseline-on-migrate: false
+  rabbitmq:
+    publisher-confirm-type: correlated
+    publisher-returns: true
+logging:
+  file:
+    name: logs/hg_backend.log
