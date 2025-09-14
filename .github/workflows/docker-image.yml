@@ -14,9 +14,7 @@ jobs:
     - name: Checkout OpenAPI
       uses: actions/checkout@v4
       with:
-        repository: Hydrogarden-App/hg-openapi
-        path: hg-openapi
-    
+        repository: Hydrogarden-App/hg-openapi    
     
     - name: Build and push the Docker image
       run: docker build . --file Dockerfile --tag 10.8.0.1:5000/hg-backend:latest & docker push 10.8.0.1:5000/hg-backend:latest
