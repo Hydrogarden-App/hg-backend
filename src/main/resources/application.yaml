@@ -5,6 +5,15 @@ hydrogarden:
     port: 3306
     username: root
     password: root
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  clerk:
+    jwks:
+      refresh-ms: 3600000
+      url: "https://sound-lemming-80.clerk.accounts.dev/.well-known/jwks.json"
 
 spring:
   datasource:
@@ -28,6 +37,10 @@ spring:
   rabbitmq:
     publisher-confirm-type: correlated
     publisher-returns: true
+    host: ${hydrogarden.rabbitmq.host}
+    port: ${hydrogarden.rabbitmq.port}
+    username: ${hydrogarden.rabbitmq.username}
+    password: ${hydrogarden.rabbitmq.password}
 logging:
   file:
     name: logs/hg_backend.log
