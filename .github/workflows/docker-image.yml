@@ -1,0 +1,22 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Checkout OpenAPI
+      uses: actions/checkout@v4
+      with:
+        repository: Hydrogarden-App/hg-openapi    
+        token: ${{ secrets.GITHUB_TOKEN }} 
+        path: hg-openapi
+    
+    - name: Build and push the Docker image
+      run: docker build . --file Dockerfile --tag 10.8.0.1:5000/hg-backend:latest & docker push 10.8.0.1:5000/hg-backend:latest
