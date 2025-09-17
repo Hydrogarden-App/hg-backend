@@ -15,7 +15,7 @@ public class JwtKeyCache {
     public synchronized void setPublicKeys(Map<String, PublicKey> kidPubkeyMap) {
         this.kidToKeyMap = new HashMap<>(kidPubkeyMap);
         StringBuilder kids = new StringBuilder();
-        kidToKeyMap.forEach((kid,_) -> kids.append("%s, ".formatted(kid)));
+        kidToKeyMap.forEach((kid,publicKey) -> kids.append("%s, ".formatted(kid)));
 
         log.info("JwtKeyCache has been updated. kid=[{}]",kids.toString());
     }
