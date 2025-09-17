@@ -1,5 +1,10 @@
 pipeline {
 	agent any
+	environment {
+		DOCKER_REGISTRY = '10.8.0.1:5000'
+        IMAGE_NAME = 'hg-backend'
+        DOCKER_TAG = 'latest'
+    }
     stages {
 		stage('Checkout in Parallel') {
 			parallel {
@@ -50,10 +55,36 @@ pipeline {
             }
         }
 
-        stage('Hello') {
+        stage('Build Backend Image') {
 			steps {
-				echo 'Hello World'
+				script {
+					dir('hg-backend') {
+						sh """
+                        docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${DOCKER_TAG} .
+                    """
+                }
+                }
             }
         }
+
+        stage('Push Docker Image') {
+			steps {
+				script {
+					sh 'docker push 10.8.0.1:5000/hg-backend:latest'
+
+                }
+            }
+   		}
+
+    	stage('Deploy to Prod') {
+			steps {
+				script {
+                    sh 'sudo systemctl restart hg-docker-compose.service'
+
+                    sh 'sudo systemctl status hg-docker-compose.service --no-pager'
+                }
+            }
+        }
+
     }
 }
