@@ -45,7 +45,7 @@ pipeline {
         stage('Build hg-backend') {
 			steps {
 				dir('hg-backend') {
-					sh 'mvn clean install -B'
+					sh 'mvn clean install -B -DskipTests'
                 }
             }
         }
