@@ -11,6 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.security.Key;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Log4j2
+@Component
 @Profile("!auth-disabled")
 public class JwtAuthenticationFilter extends HydrogardenAuthenticationFilter {
     private final JwtKeyCache jwtKeyCache;
