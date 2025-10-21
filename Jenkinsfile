@@ -1,9 +1,7 @@
 pipeline {
 	agent any
 	environment {
-		DOCKER_REGISTRY = '10.8.0.1:5000'
         IMAGE_NAME = 'hg-backend'
-        DOCKER_TAG = 'latest'
     }
     stages {
 		stage('Checkout in Parallel') {
@@ -60,28 +58,17 @@ pipeline {
 				script {
 					dir('hg-backend') {
 						sh """
-                        docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${DOCKER_TAG} .
+                        docker build -t ${IMAGE_NAME}:latest .
                     """
                 }
                 }
             }
         }
 
-        stage('Push Docker Image') {
-			steps {
-				script {
-					sh 'docker push 10.8.0.1:5000/hg-backend:latest'
-
-                }
-            }
-   		}
-
     	stage('Deploy to Prod') {
 			steps {
 				script {
-                    sh 'sudo systemctl restart hg-docker-compose.service'
-
-                    sh 'sudo systemctl status hg-docker-compose.service --no-pager'
+                    sh 'cd /opt/hydrogarden/docker && docker compose down hg-backend && docker compose up -d'
                 }
             }
         }

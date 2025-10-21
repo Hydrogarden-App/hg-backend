@@ -8,24 +8,39 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.security.Key;
 import java.util.List;
 
-@RequiredArgsConstructor
 @Log4j2
 @Component
 @Profile("!auth-disabled")
 public class JwtAuthenticationFilter extends HydrogardenAuthenticationFilter {
     private final JwtKeyCache jwtKeyCache;
+    private final String contextPath;
+
+    public JwtAuthenticationFilter(JwtKeyCache jwtKeyCache, @Value("${server.servlet.context-path}") String contextPath) {
+        this.jwtKeyCache = jwtKeyCache;
+        this.contextPath = contextPath;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        /*if(request.getServletPath().equals("/actuator/health")){
+
+            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("Healthcheck", ""));
+            filterChain.doFilter(request, response);
+            return;
+        }*/
+
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);

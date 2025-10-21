@@ -1,7 +1,7 @@
 hydrogarden:
   service-name: hg-backend
   mysql:
-    host: localhost
+    host: 127.0.0.1
     port: 3306
     username: root
     password: root
@@ -14,6 +14,11 @@ hydrogarden:
     jwks:
       refresh-ms: 3600000
       url: "https://sound-lemming-80.clerk.accounts.dev/.well-known/jwks.json"
+
+server:
+  servlet:
+    context-path: "/${hydrogarden.service-name}"
+  port: 8081
 
 spring:
   datasource:
