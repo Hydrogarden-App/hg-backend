@@ -15,7 +15,23 @@ hydrogarden:
       refresh-ms: 3600000
       url: "https://sound-lemming-80.clerk.accounts.dev/.well-known/jwks.json"
 
+logging:
+  level:
+    org:
+      apache:
+        catalina: DEBUG
+        tomcat: DEBUG
+  file:
+    name: ./hg-logs/hg-backend/hg_backend.log
 server:
+  tomcat:
+    basedir: file:/tmp
+    accesslog:
+      enabled: true
+      pattern: "%h %l %u %t \"%r\" %s %b"
+      prefix: access_log
+      directory: /app/hg-logs/hg-backend
+      suffix: .log
   servlet:
     context-path: "/${hydrogarden.service-name}"
   port: 8081
@@ -46,6 +62,3 @@ spring:
     port: ${hydrogarden.rabbitmq.port}
     username: ${hydrogarden.rabbitmq.username}
     password: ${hydrogarden.rabbitmq.password}
-logging:
-  file:
-    name: logs/hg_backend.log
