@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class SecuredEndpoint {
 
+    
     @GetMapping
     public ResponseEntity<String> test(@AuthenticationPrincipal UserId userId) {
         return ResponseEntity.ok("Hello, %s".formatted(userId.getValue()));
