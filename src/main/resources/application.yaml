@@ -28,6 +28,7 @@ server:
     basedir: file:/tmp
     accesslog:
       enabled: true
+      rotate: false
       pattern: "%h %l %u %t \"%r\" %s %b"
       prefix: access_log
       directory: /app/hg-logs/hg-backend
