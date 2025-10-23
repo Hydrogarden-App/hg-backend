@@ -14,7 +14,7 @@ pipeline {
                                 branches: [[name: '*/main']],
                                 userRemoteConfigs: [[
                                     url: 'https://github.com/Hydrogarden-App/hg-openapi.git',
-                                    credentialsId: 'hydrogarden-app-jenkins'
+                                    credentialsId: 'jenkins-hydrogarden-girhub-app'
                                 ]]
                             ])
                         }
@@ -28,7 +28,7 @@ pipeline {
                                 branches: [[name: '*/main']],
                                 userRemoteConfigs: [[
                                     url: 'https://github.com/Hydrogarden-App/hg-backend.git',
-                                    credentialsId: 'hydrogarden-app-jenkins'
+                                    credentialsId: 'jenkins-hydrogarden-girhub-app'
                                 ]]
                             ])
                         }
