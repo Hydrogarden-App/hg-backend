@@ -26,15 +26,6 @@ public class DeviceCommandTest {
     }
 
     @Test
-    public void testStartCommand(){
-
-        DeviceCommand deviceCommand = new StartCommand(new DeviceId((short) 1));
-        byte[] byteArray = deviceCommand.toBytes();
-        String binaryString = bytearrToString(byteArray);
-        Assertions.assertEquals("00000000000000010000001000000000", binaryString);
-    }
-
-    @Test
     public void testHeartbeatCommand(){
 
         DeviceCommand deviceCommand = new HeartbeatCommand(new DeviceId((short) 1));

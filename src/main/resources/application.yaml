@@ -6,7 +6,7 @@ hydrogarden:
     username: root
     password: root
   rabbitmq:
-    host: localhost
+    host: 10.8.0.1
     port: 5672
     username: guest
     password: guest
@@ -57,6 +57,9 @@ spring:
       - classpath:db/migration/dml
     baseline-on-migrate: false
   rabbitmq:
+    listener:
+      simple:
+        default-requeue-rejected: false
     publisher-confirm-type: correlated
     publisher-returns: true
     host: ${hydrogarden.rabbitmq.host}

@@ -13,7 +13,8 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.5</version>
+        <version>4.0.1</version>
+        <relativePath/>
     </parent>
 
     <contributors>
@@ -27,8 +28,8 @@
     </contributors>
 
     <properties>
-        <java.version>21</java.version>
-        <lombok.version>1.18.32</lombok.version>
+        <java.version>25</java.version>
+        <lombok.version>1.18.42</lombok.version>
         <mysql.version>8.0.33</mysql.version>
         <commons-lang3.version>3.14.0</commons-lang3.version>
         <flyway-core.version>10.20.0</flyway-core.version>
@@ -66,17 +67,19 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
-            <version>${spring-boot-validation.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>${spring-boot-data-jpa.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
-            <version>${spring-boot-amqp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>8.0.3.Final</version>
         </dependency>
 
         <dependency>
