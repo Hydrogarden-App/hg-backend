@@ -1,28 +1,25 @@
 package com.hydrogarden.common;
 
 
+import com.hydrogarden.business.device.core.entity.DeviceId;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.List;
+
 @Component
-@Profile("auth-disabled")
+@Profile("dev")
 public class DevAuthenticationFilter extends HydrogardenAuthenticationFilter {
-    private UserId userIdObj = new UserId("user_32hh3gWMWiqxGE8SKkxC15Hz8My");
+    private UserSecurityModel mockUser = new UserSecurityModel(new UserId("user_1234567"), new DeviceId((short) 1L));
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        UsernamePasswordAuthenticationToken auth =
-                new UsernamePasswordAuthenticationToken(userIdObj,null, List.of());
-
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        SecurityContextHolder.getContext().setAuthentication(mockUser);
 
         filterChain.doFilter(request, response);
     }

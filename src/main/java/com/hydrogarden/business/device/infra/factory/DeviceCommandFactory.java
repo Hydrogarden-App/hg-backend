@@ -11,7 +11,6 @@ public class DeviceCommandFactory {
 
     static {
         register(DeviceCommandType.KEEP_ALIVE.getCode(), KeepAliveCommand::fromBytes);
-        register(DeviceCommandType.START.getCode(), StartCommand::fromBytes);
         register(DeviceCommandType.HEARTBEAT.getCode(), HeartbeatCommand::fromBytes);
         register(DeviceCommandType.NEW_STATE.getCode(), NewStateCommand::fromBytes);
         register(DeviceCommandType.ACK_STATE.getCode(), AckStateCommand::fromBytes);
@@ -28,6 +27,7 @@ public class DeviceCommandFactory {
         byte type = data[2];
         Function<byte[], DeviceCommand> parser = registry.get(type);
         if (parser == null) throw new IllegalArgumentException("Unknown command type " + type);
-        return parser.apply(data);
+        DeviceCommand command = parser.apply(data);
+        return command;
     }
 }

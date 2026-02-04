@@ -2,13 +2,12 @@ package com.hydrogarden.business.device.core.entity;
 
 import com.hydrogarden.business.device.core.commands.*;
 import com.hydrogarden.business.device.core.event.KeepaliveSentDE;
+import com.hydrogarden.business.device.core.event.RegisteredDeviceShutdownDE;
 import com.hydrogarden.business.device.core.event.RegisteredDeviceStartDE;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.util.Assert;
 
-import java.io.File;
-import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -17,12 +16,11 @@ import java.util.*;
  * Aggregate root representing a Device in the system.
  * Handles device state, command requests, acknowledgements, and heartbeat evaluation.
  */
-@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "device")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Device extends HydrogardenAgreggateRoot implements DeviceCommandVisitor {
+public class Device extends HydrogardenAgreggateRoot {
 
     // ------------------- Getters -------------------
     /**
@@ -64,10 +62,15 @@ public class Device extends HydrogardenAgreggateRoot implements DeviceCommandVis
     @JoinColumn(name = "id", referencedColumnName = "id")
     private DeviceVitals deviceVitals;
 
+    @Getter
+    @OneToMany
+    @JoinColumn(name = "device_id")
+    private Set<DeviceOwnership> deviceOwners;
+
 
     // ------------------- Domain Behavior -------------------
 
-    public DeviceCommand requestChangeCircuitState(CircuitId circuitId, CircuitState newState) {
+    public OutboundDeviceCommand requestChangeCircuitState(CircuitId circuitId, CircuitState newState) {
         if (this.deviceVitals.getState() != DeviceState.ALIVE) {
             throw new IllegalStateException("Cannot change circuit state of a dead device");
         }
@@ -84,43 +87,19 @@ public class Device extends HydrogardenAgreggateRoot implements DeviceCommandVis
     }
 
     private void acknowledgeAckStateReceived(List<CircuitState> circuitStates, DeviceContext now) {
-        checkIfDeviceStarted(now.now());
-
         for (int i = 0; i < this.circuits.size(); i++) {
             circuits.get(i).setState(circuitStates.get(i));
         }
-    }
-
-    private void checkIfDeviceStarted(LocalDateTime now) {
-
-        if(this.deviceVitals.getState() == DeviceState.DEAD) {
-            this.deviceVitals.setState(DeviceState.ALIVE);
-            this.registerDomainEvent(new RegisteredDeviceStartDE(this.id, now));
-        }
-
-        this.deviceVitals.setLastCommandReceiveTime(now);
-
-    }
-
-    /**
-     * Acknowledge that a heartbeat signal has been received.
-     *
-     * @param now current time
-     */
-    public void acknowledgeHeartbeatReceived(LocalDateTime now) {
-        checkIfDeviceStarted(now);
     }
 
     /**
      * @param ackConfigCommand
      */
     private void acknowledgeAckConfigReceived(AckConfigCommand ackConfigCommand, DeviceContext deviceContext) {
-        checkIfDeviceStarted(deviceContext.now());
         this.deviceVitals.setDeviceConfig(new DeviceConfig(ackConfigCommand.getStandbyTimeout(), ackConfigCommand.getHeartbeatInterval()));
     }
 
     private void acknowledgeRequestConfigReceived(RequestConfigCommand requestConfigCommand, DeviceContext deviceContext) {
-        checkIfDeviceStarted(deviceContext.now());
         this.deviceVitals.setDeviceConfig(new DeviceConfig());
     }
 
@@ -129,51 +108,61 @@ public class Device extends HydrogardenAgreggateRoot implements DeviceCommandVis
      *
      * @return optional DeviceCommand if an action is needed
      */
-    public List<DeviceCommand> evaluateCurrentStateAndCommand(DeviceContext deviceContext) {
-        this.evaluateState(deviceContext);
-        List<DeviceCommand> commands = evaluateCommands(deviceContext);
-
-        return commands;
+    public List<OutboundDeviceCommand> evaluateCurrentStateAndCommand(DeviceContext deviceContext) {
+        this.checkIfAliveOrDead(deviceContext);
+        return evaluateCommands(deviceContext);
     }
 
-    private List<DeviceCommand> evaluateCommands(DeviceContext deviceContext) {
-        List<DeviceCommand> commands = new ArrayList<>();
+    private List<OutboundDeviceCommand> evaluateCommands(DeviceContext deviceContext) {
+        List<OutboundDeviceCommand> commands = new ArrayList<>();
 
         if (this.shouldSendConfig(deviceContext)) {
-            DeviceCommand command = this.requestSendingConfig(deviceContext);
+            OutboundDeviceCommand command = this.requestSendingConfig(deviceContext);
             commands.add(command);
             return commands;
         }
 
         if (this.shouldSendKeepalive(deviceContext)) {
-            DeviceCommand e = this.requestKeepAlive(deviceContext.now());
-            commands.add(e);
+            OutboundDeviceCommand command = this.requestKeepAlive(deviceContext.now());
+            commands.add(command);
         }
 
         if (this.shouldSendNewState(deviceContext)) {
-            DeviceCommand command = this.requestSendingNewState(deviceContext.now());
+            OutboundDeviceCommand command = this.requestSendingNewState(deviceContext.now());
             commands.add(command);
         }
 
         return commands;
     }
 
-    private DeviceCommand requestSendingConfig(DeviceContext deviceContext) {
+    private OutboundDeviceCommand requestSendingConfig(DeviceContext deviceContext) {
         return new ConfigCommand(this.id, this.deviceVitals.getDesiredDeviceConfig().getStandbyTimeout(), this.deviceVitals.getDesiredDeviceConfig().getHeartbeatInterval());
     }
 
     private boolean shouldSendConfig(DeviceContext deviceContext) {
-        boolean timeForConfigCommand = this.deviceVitals.getLastConfigSendTime() == null || Duration.between(this.deviceVitals.getLastConfigSendTime(), deviceContext.now()).compareTo(this.configInterval) > 0;
+        boolean timeForConfigCommand = hasIntervalElapsed(
+            this.deviceVitals.getLastConfigSendTime(),
+            this.configInterval,
+            deviceContext.now()
+        );
 
-        return this.deviceVitals.getDesiredState() == DeviceState.ALIVE && timeForConfigCommand && !Objects.equals(this.deviceVitals.getDeviceConfig(), this.deviceVitals.getDesiredDeviceConfig());
+        return this.deviceVitals.getDesiredState() == DeviceState.ALIVE &&
+               timeForConfigCommand &&
+               hasUnsynchronizedConfig();
     }
 
     private boolean shouldSendNewState(DeviceContext deviceContext) {
-        boolean timeForNewStateCommand = this.deviceVitals.getLastNewStateSendTime() == null || Duration.between(this.deviceVitals.getLastNewStateSendTime(), deviceContext.now()).compareTo(this.newStateInterval) > 0;
-        return timeForNewStateCommand && this.circuits.stream().anyMatch(Circuit::isUnsynchronised) && this.deviceVitals.getState() == DeviceState.ALIVE && this.deviceVitals.getDesiredState() == DeviceState.ALIVE;
+        boolean timeForNewStateCommand = hasIntervalElapsed(
+            this.deviceVitals.getLastNewStateSendTime(),
+            this.newStateInterval,
+            deviceContext.now()
+        );
+        return timeForNewStateCommand &&
+               hasUnsynchronizedCircuits() &&
+               isFullyAlive();
     }
 
-    private DeviceCommand requestSendingNewState(LocalDateTime now) {
+    private OutboundDeviceCommand requestSendingNewState(LocalDateTime now) {
 
         return new NewStateCommand(id, this.circuits.stream().map(Circuit::getDesiredState).toList());
     }
@@ -193,11 +182,23 @@ public class Device extends HydrogardenAgreggateRoot implements DeviceCommandVis
      *
      * @return Enable command
      */
-    public DeviceCommand enable() {
+    public OutboundDeviceCommand enable() {
+        return this.updateDesiredState(DeviceState.ALIVE);
+    }
 
-        this.deviceVitals.setDesiredState(DeviceState.ALIVE);
+    private OutboundDeviceCommand updateDesiredState(DeviceState newDesiredState){
+        DeviceState currentDesiredState = this.deviceVitals.getDesiredState();
 
-        return new StartCommand(this.id);
+        if(currentDesiredState != newDesiredState){
+            this.deviceVitals.setDesiredState(newDesiredState);
+            if(newDesiredState == DeviceState.ALIVE){
+                return new ConfigCommand(this.id, this.deviceVitals.getDesiredDeviceConfig().getStandbyTimeout(), this.deviceVitals.getDesiredDeviceConfig().getHeartbeatInterval());
+
+            }
+        }
+
+        return null;
+
     }
 
     /**
@@ -205,8 +206,8 @@ public class Device extends HydrogardenAgreggateRoot implements DeviceCommandVis
      *
      * @return
      */
-    public DeviceCommand disable() {
-        this.deviceVitals.setDesiredState(DeviceState.DEAD);
+    public OutboundDeviceCommand disable() {
+        this.updateDesiredState(DeviceState.DEAD);
         return new NewStateCommand(id, this.circuits.stream().map(c -> new CircuitState(false)).toList());
     }
 
@@ -216,9 +217,13 @@ public class Device extends HydrogardenAgreggateRoot implements DeviceCommandVis
      * @return true if a keepalive should be sent
      */
     private boolean shouldSendKeepalive(DeviceContext deviceContext) {
-        boolean timeForKeepaliveCommand = this.deviceVitals.getLastKeepAliveSendTime() == null || Duration.between(this.deviceVitals.getLastKeepAliveSendTime(), deviceContext.now()).compareTo(this.keepaliveInterval) > 0;
+        boolean timeForKeepaliveCommand = hasIntervalElapsed(
+            this.deviceVitals.getLastKeepAliveSendTime(),
+            this.keepaliveInterval,
+            deviceContext.now()
+        );
 
-        return this.deviceVitals.getState() == DeviceState.ALIVE && this.deviceVitals.getDesiredState() == DeviceState.ALIVE && timeForKeepaliveCommand;
+        return isFullyAlive() && timeForKeepaliveCommand;
     }
 
     /**
@@ -227,7 +232,7 @@ public class Device extends HydrogardenAgreggateRoot implements DeviceCommandVis
      * @param now current time
      * @return the KeepAlive DeviceCommand
      */
-    private DeviceCommand requestKeepAlive(LocalDateTime now) {
+    private OutboundDeviceCommand requestKeepAlive(LocalDateTime now) {
         this.deviceVitals.setLastKeepAliveSendTime(now);
         this.registerDomainEvent(new KeepaliveSentDE(this.id, now));
         return new KeepAliveCommand(this.id);
@@ -236,27 +241,107 @@ public class Device extends HydrogardenAgreggateRoot implements DeviceCommandVis
     /**
      * Evaluates device state based on last heartbeat and timing rules.
      */
-    private void evaluateState(DeviceContext deviceContext) {
-        if (this.getDeviceVitals().getLastCommandReceiveTime() == null) return;
+    private void checkIfAliveOrDead(DeviceContext deviceContext) {
+        DeviceState targetState = isHeartbeatReceivedOnTime(deviceContext)
+            ? DeviceState.ALIVE
+            : DeviceState.DEAD;
 
-        Duration timeSinceLastHeartbeat = Duration.between(this.getDeviceVitals().getLastCommandReceiveTime(), deviceContext.now());
-        boolean heartbeatReceivedOnTime = timeSinceLastHeartbeat.compareTo(this.deviceVitals.getDeviceConfig().getStandbyTimeout()) < 0;
-
-        if (!heartbeatReceivedOnTime) {
-            this.deviceVitals.setState(DeviceState.DEAD);
-        } else {
-            this.deviceVitals.setState(DeviceState.ALIVE);
-        }
-
+        updateDeviceState(targetState, deviceContext);
     }
 
     public List<Circuit> getCircuits() {
         return Collections.unmodifiableList(circuits);
     }
 
-    public List<DeviceCommand> handleDeviceCommand(DeviceCommand deviceCommand, DeviceContext deviceContext) {
-        deviceCommand.accept(this, deviceContext);
+    /**
+     * Checks if the specified interval has elapsed since the last send time.
+     * Returns true if lastSendTime is null (never sent) or interval has elapsed.
+     */
+    private boolean hasIntervalElapsed(LocalDateTime lastSendTime, Duration interval, LocalDateTime now) {
+        return lastSendTime == null ||
+               Duration.between(lastSendTime, now).compareTo(interval) > 0;
+    }
+
+    /**
+     * Checks if device is fully alive (both actual and desired state are ALIVE).
+     */
+    private boolean isFullyAlive() {
+        return this.deviceVitals.getState() == DeviceState.ALIVE &&
+               this.deviceVitals.getDesiredState() == DeviceState.ALIVE;
+    }
+
+    /**
+     * Checks if device has unsynchronized configuration.
+     */
+    private boolean hasUnsynchronizedConfig() {
+        return !Objects.equals(
+            this.deviceVitals.getDeviceConfig(),
+            this.deviceVitals.getDesiredDeviceConfig()
+        );
+    }
+
+    /**
+     * Checks if any circuit is unsynchronized.
+     */
+    private boolean hasUnsynchronizedCircuits() {
+        return this.circuits.stream().anyMatch(Circuit::isUnsynchronised);
+    }
+
+    /**
+     * Determines if heartbeat was received on time based on standby timeout.
+     */
+    private boolean isHeartbeatReceivedOnTime(DeviceContext deviceContext) {
+        if (this.deviceVitals.getLastCommandReceiveTime() == null) {
+            return false;
+        }
+
+        Duration timeSinceLastCommand = Duration.between(
+            this.deviceVitals.getLastCommandReceiveTime(),
+            deviceContext.now()
+        );
+
+        return timeSinceLastCommand.compareTo(
+            this.deviceVitals.getDesiredDeviceConfig().getStandbyTimeout()
+        ) < 0;
+    }
+
+    /**
+     * Updates the device state and raises appropriate domain event if state changes.
+     */
+    private void updateDeviceState(DeviceState newState, DeviceContext deviceContext) {
+        DeviceState previousState = this.deviceVitals.getState();
+
+        if (previousState != newState) {
+            if (newState == DeviceState.ALIVE) {
+                this.registerDomainEvent(new RegisteredDeviceStartDE(this.id, deviceContext.now()));
+            } else {
+                this.registerDomainEvent(new RegisteredDeviceShutdownDE(this.id, deviceContext.now()));
+            }
+        }
+
+        this.deviceVitals.setState(newState);
+    }
+
+    public List<OutboundDeviceCommand> handleInboundDeviceCommand(InboundDeviceCommand deviceCommand, DeviceContext deviceContext) {
+        this.updateVitalsAfterInboundCommandReception(deviceContext);
+        switch (deviceCommand){
+            case AckConfigCommand c:
+                this.acknowledgeAckConfigReceived(c,deviceContext);
+                break;
+            case AckStateCommand c:
+                this.acknowledgeAckStateReceived(c.getStates(),deviceContext);
+                break;
+            case HeartbeatCommand c:
+                break;
+            case RequestConfigCommand c:
+                this.acknowledgeRequestConfigReceived(c,deviceContext);
+                break;
+        }
         return this.evaluateCurrentStateAndCommand(deviceContext);
+    }
+
+    private void handleInboundDeviceCommandInternal(InboundDeviceCommand deviceCommand, DeviceContext deviceContext) {
+
     }
 
 
@@ -264,45 +349,11 @@ public class Device extends HydrogardenAgreggateRoot implements DeviceCommandVis
         return new IllegalStateException("Device does not handle a command of type %s".formatted(cmd.getCommandType()));
     }
 
-    @Override
-    public void visit(HeartbeatCommand cmd, DeviceContext now) {
-        this.acknowledgeHeartbeatReceived(now.now());
-    }
+    private void updateVitalsAfterInboundCommandReception(DeviceContext deviceContext){
+        if(this.deviceVitals.getState() == DeviceState.DEAD) {
+            updateDeviceState(DeviceState.ALIVE, deviceContext);
+        }
 
-    @Override
-    public void visit(AckStateCommand cmd, DeviceContext now) {
-        this.acknowledgeAckStateReceived(cmd.getStates(),now);
-    }
-
-    @Override
-    public void visit(ConfigCommand configCommand, DeviceContext deviceContext) {
-        throw this.exceptionForUnhandledCommandType(configCommand);
-    }
-
-    @Override
-    public void visit(AckConfigCommand ackConfigCommand, DeviceContext deviceContext) {
-        this.acknowledgeAckConfigReceived(ackConfigCommand, deviceContext);
-    }
-
-    @Override
-    public void visit(RequestConfigCommand requestConfigCommand, DeviceContext deviceContext) {
-        this.acknowledgeRequestConfigReceived(requestConfigCommand, deviceContext);
-    }
-
-
-
-    @Override
-    public void visit(KeepAliveCommand cmd, DeviceContext now) {
-        throw exceptionForUnhandledCommandType(cmd);
-    }
-
-    @Override
-    public void visit(StartCommand cmd, DeviceContext now) {
-        throw exceptionForUnhandledCommandType(cmd);
-    }
-
-    @Override
-    public void visit(NewStateCommand cmd, DeviceContext now) {
-        throw exceptionForUnhandledCommandType(cmd);
+        this.deviceVitals.setLastCommandReceiveTime(deviceContext.now());
     }
 }

@@ -1,0 +1,27 @@
+hydrogarden:
+  service-name: hg-backend
+  clerk:
+    jwks:
+      refresh-ms: 3600000
+      url: "https://example.com/.well-known/jwks.json"
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    locations:
+      - classpath:db/migration/ddl
+      - classpath:db/migration/dml
+    baseline-on-migrate: false
+  rabbitmq:
+    listener:
+      simple:
+        default-requeue-rejected: false
+
+logging:
+  level:
+    root: INFO

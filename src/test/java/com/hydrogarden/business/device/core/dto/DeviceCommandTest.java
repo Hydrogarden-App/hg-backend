@@ -26,15 +26,6 @@ public class DeviceCommandTest {
     }
 
     @Test
-    public void testStartCommand(){
-
-        DeviceCommand deviceCommand = new StartCommand(new DeviceId((short) 1));
-        byte[] byteArray = deviceCommand.toBytes();
-        String binaryString = bytearrToString(byteArray);
-        Assertions.assertEquals("00000000000000010000001000000000", binaryString);
-    }
-
-    @Test
     public void testHeartbeatCommand(){
 
         DeviceCommand deviceCommand = new HeartbeatCommand(new DeviceId((short) 1));
@@ -61,7 +52,7 @@ public class DeviceCommandTest {
     @ParameterizedTest
     @MethodSource("stringProvider")
     public void testNewStateCommand(List<Boolean> booleans, String result){
-        List<CircuitState> circuitStates = booleans.stream().map(b -> new CircuitState()).toList();
+        List<CircuitState> circuitStates = booleans.stream().map(CircuitState::new).toList();
         DeviceCommand deviceCommand = new NewStateCommand(new DeviceId((short) 1), circuitStates);
         byte[] byteArray = deviceCommand.toBytes();
         String binaryString = bytearrToString(byteArray);

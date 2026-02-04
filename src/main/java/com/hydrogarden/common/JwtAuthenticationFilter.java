@@ -1,6 +1,7 @@
 package com.hydrogarden.common;
 
 
+import com.hydrogarden.business.device.core.entity.DeviceId;
 import io.jsonwebtoken.*;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,14 +34,6 @@ public class JwtAuthenticationFilter extends HydrogardenAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
-        /*if(request.getServletPath().equals("/actuator/health")){
-
-            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("Healthcheck", ""));
-            filterChain.doFilter(request, response);
-            return;
-        }*/
-
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
@@ -51,11 +44,10 @@ public class JwtAuthenticationFilter extends HydrogardenAuthenticationFilter {
                         .build().parseSignedClaims(token);
 
                 String userId = jws.getPayload().get("userId", String.class);
+                String deviceId = jws.getPayload().get("deviceId", String.class);
 
-                UserId userIdObj = new UserId(userId);
-
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(userIdObj, null, List.of());
+                UserSecurityModel auth =
+                        new UserSecurityModel(new UserId(userId), new DeviceId(Short.valueOf(deviceId)));
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (Exception e) {

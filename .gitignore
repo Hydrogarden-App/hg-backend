@@ -1,3 +1,4 @@
+hg-logs
 /target/
 !.mvn/wrapper/maven-wrapper.jar
 

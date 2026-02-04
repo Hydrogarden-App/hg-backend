@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 
 // Payload commands
 @Getter
-public class NewStateCommand extends AbstractDeviceCommand {
+public final class NewStateCommand extends OutboundDeviceCommand {
     private final List<CircuitState> states;
 
     public NewStateCommand(DeviceId deviceId, List<CircuitState> states) {
@@ -37,10 +37,5 @@ public class NewStateCommand extends AbstractDeviceCommand {
         return new NewStateCommand(new DeviceId(id), IntStream.range(0, states.length)
                 .mapToObj(i -> new CircuitState(states[i]))
                 .toList());
-    }
-
-    @Override
-    public void accept(DeviceCommandVisitor visitor, DeviceContext deviceContext) {
-        visitor.visit(this, deviceContext);
     }
 }

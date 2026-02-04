@@ -4,8 +4,6 @@ package com.hydrogarden.business.device.core.commands;
 public interface DeviceCommandVisitor {
     void visit(KeepAliveCommand cmd, DeviceContext now);
 
-    void visit(StartCommand cmd, DeviceContext now);
-
     void visit(HeartbeatCommand cmd, DeviceContext now);
 
     void visit(NewStateCommand cmd, DeviceContext now);

@@ -2,7 +2,7 @@ package com.hydrogarden.business.device.core.commands;
 
 import com.hydrogarden.business.device.core.entity.DeviceId;
 
-public class HeartbeatCommand extends AbstractDeviceCommand {
+public final class HeartbeatCommand extends InboundDeviceCommand {
     public HeartbeatCommand(DeviceId deviceId) {
         super(deviceId, DeviceCommandType.HEARTBEAT);
     }
@@ -10,11 +10,6 @@ public class HeartbeatCommand extends AbstractDeviceCommand {
     @Override
     public byte[] getPayload() {
         return new byte[0];
-    }
-
-    @Override
-    public void accept(DeviceCommandVisitor visitor, DeviceContext deviceContext) {
-         visitor.visit(this, deviceContext);
     }
 
     public static HeartbeatCommand fromBytes(byte[] data) {

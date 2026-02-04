@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 @Getter
-public class AckStateCommand extends AbstractDeviceCommand {
+public final class AckStateCommand extends InboundDeviceCommand {
     private final List<CircuitState> states;
 
     public AckStateCommand(DeviceId deviceId, List<CircuitState> states) {
@@ -36,10 +36,5 @@ public class AckStateCommand extends AbstractDeviceCommand {
         return new AckStateCommand(new DeviceId(id), IntStream.range(0, states.length)
                 .mapToObj(i -> new CircuitState(states[i]))
                 .toList());
-    }
-
-    @Override
-    public void accept(DeviceCommandVisitor visitor, DeviceContext deviceContext) {
-        visitor.visit(this, deviceContext);
     }
 }
