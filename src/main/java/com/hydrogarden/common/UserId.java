@@ -1,12 +1,14 @@
 package com.hydrogarden.common;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.Embeddable;
+import lombok.*;
 
-@RequiredArgsConstructor
-@EqualsAndHashCode
+@Embeddable
 @Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
 public class UserId {
-    private final String value;
+    private String value;
 }
