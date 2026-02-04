@@ -62,6 +62,11 @@ public class Device extends HydrogardenAgreggateRoot {
     @JoinColumn(name = "id", referencedColumnName = "id")
     private DeviceVitals deviceVitals;
 
+    @Getter
+    @OneToMany
+    @JoinColumn(name = "device_id")
+    private Set<DeviceOwnership> deviceOwners;
+
 
     // ------------------- Domain Behavior -------------------
 

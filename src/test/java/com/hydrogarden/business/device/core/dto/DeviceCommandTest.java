@@ -52,7 +52,7 @@ public class DeviceCommandTest {
     @ParameterizedTest
     @MethodSource("stringProvider")
     public void testNewStateCommand(List<Boolean> booleans, String result){
-        List<CircuitState> circuitStates = booleans.stream().map(b -> new CircuitState()).toList();
+        List<CircuitState> circuitStates = booleans.stream().map(CircuitState::new).toList();
         DeviceCommand deviceCommand = new NewStateCommand(new DeviceId((short) 1), circuitStates);
         byte[] byteArray = deviceCommand.toBytes();
         String binaryString = bytearrToString(byteArray);

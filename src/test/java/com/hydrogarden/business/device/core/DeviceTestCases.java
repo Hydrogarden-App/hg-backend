@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -234,7 +235,8 @@ public class DeviceTestCases {
                 DEFAULT_KEEPALIVE_INTERVAL,
                 DEFAULT_CONFIG_INTERVAL,
                 DEFAULT_NEW_STATE_INTERVAL,
-                vitals
+                vitals,
+                Collections.emptySet()
         );
 
         vitals.setDevice(device);

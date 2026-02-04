@@ -7,6 +7,7 @@ import com.hydrogarden.business.device.core.commands.OutboundDeviceCommand;
 import com.hydrogarden.business.device.core.entity.*;
 import com.hydrogarden.business.device.core.port.out.DeviceOutputPort;
 import com.hydrogarden.business.device.infra.repository.DeviceRepository;
+import com.hydrogarden.common.AuthorizedForDevice;
 import com.hydrogarden.common.HydrogardenEventPublisher;
 import com.hydrogarden.common.HydrogardenTimeProvider;
 import com.hydrogarden.common.ServiceUtils;
@@ -31,7 +32,6 @@ public class DeviceApplicationServiceImpl implements DeviceApplicationService {
     private final DeviceOutputPort deviceOutputPort;
     private final HydrogardenEventPublisher hydrogardenEventPublisher;
     private final HydrogardenTimeProvider hydrogardenTimeProvider;
-    private final EntityManager em;
 
     /**
      * Rename a device.
@@ -41,6 +41,7 @@ public class DeviceApplicationServiceImpl implements DeviceApplicationService {
      */
     @Override
     @Transactional
+    @AuthorizedForDevice
     public Device renameDevice(DeviceId deviceId, String newName) {
         Device device = deviceRepository.findById(deviceId).orElseThrow(() -> new IllegalArgumentException("Device not found: " + deviceId));
         device.rename(newName);
@@ -59,12 +60,14 @@ public class DeviceApplicationServiceImpl implements DeviceApplicationService {
 
     @Override
     @Transactional
+    @AuthorizedForDevice
     public Device getDevice(DeviceId deviceId) {
         return deviceRepository.findById(deviceId).orElseThrow(() -> new IllegalArgumentException("Device not found: " + deviceId));
     }
 
     @Override
     @Transactional
+    @AuthorizedForDevice
     public Device enableDevice(DeviceId deviceId) {
         Device device = deviceRepository.findById(deviceId).orElseThrow(() -> new IllegalArgumentException("Device not found: " + deviceId));
         OutboundDeviceCommand enableCommand = device.enable();
@@ -79,6 +82,7 @@ public class DeviceApplicationServiceImpl implements DeviceApplicationService {
 
     @Override
     @Transactional
+    @AuthorizedForDevice
     public Device disableDevice(DeviceId deviceId) {
         Device device = deviceRepository.findById(deviceId).orElseThrow(() -> new IllegalArgumentException("Device not found: " + deviceId));
         OutboundDeviceCommand newStateCommand = device.disable();
@@ -93,6 +97,7 @@ public class DeviceApplicationServiceImpl implements DeviceApplicationService {
 
     @Override
     @Transactional
+    @AuthorizedForDevice
     public Device requestChangeCircuitStatus(DeviceId deviceId, CircuitId circuitId, CircuitState circuitState) {
         Device device = deviceRepository.findById(deviceId).orElseThrow();
         OutboundDeviceCommand newStatusCommand = device.requestChangeCircuitState(circuitId, circuitState);

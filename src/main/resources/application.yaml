@@ -46,10 +46,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-  quartz:
-    job-store-type: jdbc
-    jdbc:
-      initialize-schema: always
   flyway:
     enabled: true
     locations:
