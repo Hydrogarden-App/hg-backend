@@ -15,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.List;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AuthenticationTests extends HydrogardenIntegrationTest {
@@ -24,7 +27,7 @@ public class AuthenticationTests extends HydrogardenIntegrationTest {
     DeviceApplicationService deviceApplicationService;
 
     private static @NonNull UserSecurityModel getUserWithDevice() {
-        return new UserSecurityModel(new UserId("userId"), new DeviceId((short) 123));
+        return new UserSecurityModel(new UserId("userId"), Set.of(new DeviceId((short) 1)));
     }
 
     private static @NonNull UserSecurityModel getUserWithoutDevice() {
