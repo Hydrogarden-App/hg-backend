@@ -11,11 +11,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Component
 @Profile("dev")
 public class DevAuthenticationFilter extends HydrogardenAuthenticationFilter {
-    private UserSecurityModel mockUser = new UserSecurityModel(new UserId("user_1234567"), new DeviceId((short) 1L));
+    private UserSecurityModel mockUser = new UserSecurityModel(new UserId("user_sample_owner_id"), Set.of(new DeviceId((short) 1L)));
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

@@ -2,6 +2,7 @@ package com.hydrogarden.common;
 
 
 import com.hydrogarden.business.device.core.entity.DeviceId;
+import com.hydrogarden.business.device.infra.repository.DeviceOwnershipRepository;
 import io.jsonwebtoken.*;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,18 +20,17 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.security.Key;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Component
-@Profile("!auth-disabled")
+@Profile("!dev")
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends HydrogardenAuthenticationFilter {
     private final JwtKeyCache jwtKeyCache;
-    private final String contextPath;
+    private final DeviceOwnershipRepository deviceOwnershipRepository;
 
-    public JwtAuthenticationFilter(JwtKeyCache jwtKeyCache, @Value("${server.servlet.context-path}") String contextPath) {
-        this.jwtKeyCache = jwtKeyCache;
-        this.contextPath = contextPath;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -44,13 +44,16 @@ public class JwtAuthenticationFilter extends HydrogardenAuthenticationFilter {
                         .build().parseSignedClaims(token);
 
                 String userId = jws.getPayload().get("userId", String.class);
-                String deviceId = jws.getPayload().get("deviceId", String.class);
 
+                Set<DeviceId> devices = deviceOwnershipRepository.findAllByOwnerId(new UserId(userId)).stream().map(o -> o.getId().getDeviceId()).collect(Collectors.toSet());
                 UserSecurityModel auth =
-                        new UserSecurityModel(new UserId(userId), new DeviceId(Short.valueOf(deviceId)));
+                        new UserSecurityModel(new UserId(userId), devices);
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
+                log.debug("User authorised userId={}", userId);
             } catch (Exception e) {
+                log.debug("User unauthorised");
+                log.debug(e);
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }

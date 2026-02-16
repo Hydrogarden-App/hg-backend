@@ -1,6 +1,7 @@
 package com.hydrogarden.common;
 
 import com.hydrogarden.business.device.core.entity.DeviceId;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.Authentication;
@@ -8,12 +9,14 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
+@Getter
 public class UserSecurityModel implements Authentication {
 
     private final UserId userId;
-    private final @Nullable DeviceId deviceId;
+    private final Set<DeviceId> devices;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -27,12 +30,12 @@ public class UserSecurityModel implements Authentication {
 
     @Override
     public @Nullable Object getDetails() {
-        return deviceId;
+        return devices;
     }
 
     @Override
     public @Nullable Object getPrincipal() {
-        return null;
+        return userId;
     }
 
     @Override

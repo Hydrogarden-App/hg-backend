@@ -6,6 +6,9 @@ import com.hydrogarden.business.device.core.entity.CircuitId;
 import com.hydrogarden.business.device.core.entity.CircuitState;
 import com.hydrogarden.business.device.core.entity.Device;
 import com.hydrogarden.business.device.core.entity.DeviceId;
+import com.hydrogarden.common.UserId;
+
+import java.util.List;
 
 /**
  * Application Service interface for orchestrating Device use cases.
@@ -60,4 +63,11 @@ public interface DeviceApplicationService {
      * @param deviceCommand the device command to handle
      */
     void handleDeviceCommand(InboundDeviceCommand deviceCommand);
+
+    /**
+     * Returns all devices owned by user.
+     * @param userId
+     * @return List of all devices owned by user.
+     */
+    List<Device> getDevicesForUser(UserId userId);
 }
