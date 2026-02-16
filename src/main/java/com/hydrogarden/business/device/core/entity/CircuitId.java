@@ -13,4 +13,8 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class CircuitId implements Serializable {
     private Short id;
+
+    public CircuitId(String circuitId) {
+        this.id = Short.valueOf(circuitId);
+    }
 }

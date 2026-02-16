@@ -6,11 +6,9 @@ import com.hydrogarden.business.device.core.commands.InboundDeviceCommand;
 import com.hydrogarden.business.device.core.commands.OutboundDeviceCommand;
 import com.hydrogarden.business.device.core.entity.*;
 import com.hydrogarden.business.device.core.port.out.DeviceOutputPort;
+import com.hydrogarden.business.device.infra.repository.DeviceOwnershipRepository;
 import com.hydrogarden.business.device.infra.repository.DeviceRepository;
-import com.hydrogarden.common.AuthorizedForDevice;
-import com.hydrogarden.common.HydrogardenEventPublisher;
-import com.hydrogarden.common.HydrogardenTimeProvider;
-import com.hydrogarden.common.ServiceUtils;
+import com.hydrogarden.common.*;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Application Service for orchestrating Device use cases.
@@ -29,6 +28,7 @@ import java.util.List;
 public class DeviceApplicationServiceImpl implements DeviceApplicationService {
 
     private final DeviceRepository deviceRepository;
+    private final DeviceOwnershipRepository deviceOwnershipRepository;
     private final DeviceOutputPort deviceOutputPort;
     private final HydrogardenEventPublisher hydrogardenEventPublisher;
     private final HydrogardenTimeProvider hydrogardenTimeProvider;
@@ -118,6 +118,15 @@ public class DeviceApplicationServiceImpl implements DeviceApplicationService {
 
         List<OutboundDeviceCommand> commands = device.handleInboundDeviceCommand(deviceCommand, this.getDeviceContext());
         sendDeviceCommands(commands, deviceCommand.getDeviceId());
+    }
+
+    @Override
+    public List<Device> getDevicesForUser(UserId userId) {
+        Set<DeviceOwnership> allByOwnerId = deviceOwnershipRepository.findAllByOwnerId(userId);
+
+        List<Device> allById = this.deviceRepository.findAllById(allByOwnerId.stream().map(d -> d.getId().getDeviceId()).toList());
+
+        return allById;
     }
 
     private void sendDeviceCommands(List<OutboundDeviceCommand> commands, DeviceId deviceId) {

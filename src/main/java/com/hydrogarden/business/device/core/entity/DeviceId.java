@@ -13,4 +13,8 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class DeviceId implements Serializable {
     private Short id;
+
+    public DeviceId(String deviceId) {
+        this.id = Short.valueOf(deviceId);
+    }
 }

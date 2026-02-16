@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("#deviceId == authentication.details")
+@PreAuthorize("authentication.details.contains(#deviceId)")
 public @interface AuthorizedForDevice {
 }
