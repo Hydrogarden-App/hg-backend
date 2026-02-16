@@ -40,7 +40,7 @@ pipeline {
         stage('Build hg-openapi') {
 			steps {
 				dir('hg-openapi') {
-					sh 'mvn clean install -B'
+					sh 'JAVA_HOME=/usr/lib/jvm/java-25-openjdk-arm64 mvn clean install -B'
                 }
             }
         }
@@ -48,7 +48,7 @@ pipeline {
         stage('Build hg-backend') {
 			steps {
 				dir('hg-backend') {
-					sh 'mvn clean install -B -DskipTests'
+					sh 'JAVA_HOME=/usr/lib/jvm/java-25-openjdk-arm64 mvn clean install -B -DskipTests'
                 }
             }
         }
