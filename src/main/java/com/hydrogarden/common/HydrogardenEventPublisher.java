@@ -1,7 +1,7 @@
 package com.hydrogarden.common;
 
 
-import com.hydrogarden.business.device.core.entity.HydrogardenDomainEvent;
+import com.hydrogarden.business.common.event.HydrogardenDomainEvent;
 
 import java.util.List;
 

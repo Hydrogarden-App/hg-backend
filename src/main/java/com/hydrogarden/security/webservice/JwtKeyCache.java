@@ -1,4 +1,4 @@
-package com.hydrogarden.common;
+package com.hydrogarden.security.webservice;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

@@ -2,9 +2,8 @@ package com.hydrogarden.security;
 
 
 import com.hydrogarden.business.device.app.service.DeviceApplicationService;
-import com.hydrogarden.business.device.core.entity.DeviceId;
-import com.hydrogarden.common.UserId;
-import com.hydrogarden.common.UserSecurityModel;
+import com.hydrogarden.business.common.vo.DeviceId;
+import com.hydrogarden.business.common.vo.UserId;
 import com.hydrogarden.test.utils.HydrogardenIntegrationTest;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterEach;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;

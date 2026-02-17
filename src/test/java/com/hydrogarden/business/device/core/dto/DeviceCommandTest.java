@@ -1,8 +1,8 @@
 package com.hydrogarden.business.device.core.dto;
 
 import com.hydrogarden.business.device.core.commands.*;
-import com.hydrogarden.business.device.core.entity.CircuitState;
-import com.hydrogarden.business.device.core.entity.DeviceId;
+import com.hydrogarden.business.device.core.vo.CircuitState;
+import com.hydrogarden.business.common.vo.DeviceId;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

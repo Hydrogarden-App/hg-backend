@@ -1,5 +1,6 @@
-package com.hydrogarden.common;
+package com.hydrogarden.security;
 
+import com.hydrogarden.security.filter.HydrogardenAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

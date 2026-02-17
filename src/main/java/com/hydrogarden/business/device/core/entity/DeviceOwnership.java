@@ -1,5 +1,6 @@
 package com.hydrogarden.business.device.core.entity;
 
+import com.hydrogarden.business.device.core.vo.DeviceOwnershipId;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

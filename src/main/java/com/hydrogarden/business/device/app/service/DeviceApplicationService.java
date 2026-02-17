@@ -1,12 +1,11 @@
 package com.hydrogarden.business.device.app.service;
 
-import com.hydrogarden.business.device.core.commands.DeviceCommand;
 import com.hydrogarden.business.device.core.commands.InboundDeviceCommand;
-import com.hydrogarden.business.device.core.entity.CircuitId;
-import com.hydrogarden.business.device.core.entity.CircuitState;
+import com.hydrogarden.business.device.core.vo.CircuitId;
+import com.hydrogarden.business.device.core.vo.CircuitState;
 import com.hydrogarden.business.device.core.entity.Device;
-import com.hydrogarden.business.device.core.entity.DeviceId;
-import com.hydrogarden.common.UserId;
+import com.hydrogarden.business.common.vo.DeviceId;
+import com.hydrogarden.business.common.vo.UserId;
 
 import java.util.List;
 

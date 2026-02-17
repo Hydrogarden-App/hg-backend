@@ -1,5 +1,7 @@
 package com.hydrogarden.business.device.core.entity;
 
+import com.hydrogarden.business.common.vo.DeviceId;
+import com.hydrogarden.business.device.core.enums.DeviceState;
 import jakarta.persistence.*;
 import lombok.*;
 

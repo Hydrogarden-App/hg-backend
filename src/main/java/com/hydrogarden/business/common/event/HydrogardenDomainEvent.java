@@ -1,4 +1,4 @@
-package com.hydrogarden.business.device.core.entity;
+package com.hydrogarden.business.common.event;
 
 import lombok.Getter;
 

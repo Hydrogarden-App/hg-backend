@@ -1,7 +1,6 @@
 package com.hydrogarden.business.device.app.mapper;
 
-import com.hydrogarden.business.device.core.entity.CircuitId;
-import com.hydrogarden.business.device.core.entity.DeviceId;
+import com.hydrogarden.business.common.vo.DeviceId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;

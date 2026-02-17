@@ -1,8 +1,11 @@
-package com.hydrogarden.common;
+package com.hydrogarden.security.filter;
 
 
-import com.hydrogarden.business.device.core.entity.DeviceId;
+import com.hydrogarden.business.common.vo.DeviceId;
+import com.hydrogarden.business.common.vo.UserId;
 import com.hydrogarden.business.device.infra.repository.DeviceOwnershipRepository;
+import com.hydrogarden.security.webservice.JwtKeyCache;
+import com.hydrogarden.security.UserSecurityModel;
 import io.jsonwebtoken.*;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,16 +13,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.security.Key;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 

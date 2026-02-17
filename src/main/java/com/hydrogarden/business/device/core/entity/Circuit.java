@@ -1,5 +1,7 @@
 package com.hydrogarden.business.device.core.entity;
 
+import com.hydrogarden.business.device.core.vo.CircuitId;
+import com.hydrogarden.business.device.core.vo.CircuitState;
 import jakarta.persistence.*;
 import lombok.*;
 

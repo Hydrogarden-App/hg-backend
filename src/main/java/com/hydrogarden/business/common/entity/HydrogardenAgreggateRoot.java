@@ -1,6 +1,7 @@
-package com.hydrogarden.business.device.core.entity;
+package com.hydrogarden.business.common.entity;
 
 
+import com.hydrogarden.business.common.event.HydrogardenDomainEvent;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 

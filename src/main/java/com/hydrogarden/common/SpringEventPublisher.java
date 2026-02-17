@@ -1,6 +1,6 @@
 package com.hydrogarden.common;
 
-import com.hydrogarden.business.device.core.entity.HydrogardenDomainEvent;
+import com.hydrogarden.business.common.event.HydrogardenDomainEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;

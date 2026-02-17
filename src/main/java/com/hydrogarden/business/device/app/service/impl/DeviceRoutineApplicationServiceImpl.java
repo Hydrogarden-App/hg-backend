@@ -1,10 +1,11 @@
-package com.hydrogarden.business.device.app.service;
+package com.hydrogarden.business.device.app.service.impl;
 
+import com.hydrogarden.business.device.app.service.DeviceRoutineApplicationService;
 import com.hydrogarden.business.device.core.commands.DeviceCommand;
 import com.hydrogarden.business.device.core.commands.DeviceContext;
 import com.hydrogarden.business.device.core.commands.OutboundDeviceCommand;
 import com.hydrogarden.business.device.core.entity.Device;
-import com.hydrogarden.business.device.core.entity.DeviceId;
+import com.hydrogarden.business.common.vo.DeviceId;
 import com.hydrogarden.business.device.core.port.out.DeviceOutputPort;
 import com.hydrogarden.business.device.infra.repository.DeviceRepository;
 import com.hydrogarden.common.HydrogardenTimeProvider;
