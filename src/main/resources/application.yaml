@@ -1,7 +1,7 @@
 hydrogarden:
   service-name: hg-backend
   mysql:
-    host: 127.0.0.1
+    host: 10.8.0.1
     port: 3306
     username: root
     password: root
@@ -17,10 +17,14 @@ hydrogarden:
 
 logging:
   level:
+    root: DEBUG
     org:
       apache:
         catalina: DEBUG
         tomcat: DEBUG
+    com:
+      hydrogarden: debug
+
   file:
     name: ./hg-logs/hg-backend/hg_backend.log
 server:
@@ -40,7 +44,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${hydrogarden.mysql.host}:${hydrogarden.mysql.port}/${hydrogarden.service-name}
+    url: jdbc:mysql://${hydrogarden.mysql.host}:${hydrogarden.mysql.port}/${hydrogarden.mysql.username}
     password: ${hydrogarden.mysql.password}
     username: ${hydrogarden.mysql.username}
   jpa:
@@ -62,3 +66,4 @@ spring:
     port: ${hydrogarden.rabbitmq.port}
     username: ${hydrogarden.rabbitmq.username}
     password: ${hydrogarden.rabbitmq.password}
+
