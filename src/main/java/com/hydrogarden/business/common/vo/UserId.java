@@ -1,4 +1,4 @@
-package com.hydrogarden.common;
+package com.hydrogarden.business.common.vo;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;

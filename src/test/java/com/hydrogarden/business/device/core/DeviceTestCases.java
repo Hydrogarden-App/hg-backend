@@ -1,6 +1,10 @@
 package com.hydrogarden.business.device.core;
 
+import com.hydrogarden.business.common.vo.DeviceId;
 import com.hydrogarden.business.device.core.entity.*;
+import com.hydrogarden.business.device.core.enums.DeviceState;
+import com.hydrogarden.business.device.core.vo.CircuitId;
+import com.hydrogarden.business.device.core.vo.CircuitState;
 import org.junit.jupiter.params.provider.Arguments;
 
 import java.lang.reflect.Field;

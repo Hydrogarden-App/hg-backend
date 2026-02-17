@@ -1,9 +1,8 @@
 package com.hydrogarden.business.device.core.event;
 
-import com.hydrogarden.business.device.core.entity.DeviceId;
-import com.hydrogarden.business.device.core.entity.HydrogardenDomainEvent;
+import com.hydrogarden.business.common.vo.DeviceId;
+import com.hydrogarden.business.common.event.HydrogardenDomainEvent;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 

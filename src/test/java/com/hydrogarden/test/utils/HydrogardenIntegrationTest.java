@@ -1,6 +1,6 @@
 package com.hydrogarden.test.utils;
 
-import com.hydrogarden.common.JwksWebservice;
+import com.hydrogarden.security.webservice.JwksWebservice;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.test.context.SpringBootTest;

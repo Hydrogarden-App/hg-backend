@@ -1,8 +1,8 @@
 package com.hydrogarden.business.device.core.commands;
 
 import com.hydrogarden.business.device.core.BinaryUtils;
-import com.hydrogarden.business.device.core.entity.CircuitState;
-import com.hydrogarden.business.device.core.entity.DeviceId;
+import com.hydrogarden.business.device.core.vo.CircuitState;
+import com.hydrogarden.business.common.vo.DeviceId;
 import lombok.Getter;
 
 import java.util.Arrays;

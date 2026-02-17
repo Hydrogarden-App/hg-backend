@@ -1,8 +1,12 @@
 package com.hydrogarden.business.device.core.entity;
 
+import com.hydrogarden.business.common.event.HydrogardenDomainEvent;
 import com.hydrogarden.business.device.core.DeviceTestCases;
 import com.hydrogarden.business.device.core.commands.*;
+import com.hydrogarden.business.device.core.enums.DeviceState;
 import com.hydrogarden.business.device.core.event.*;
+import com.hydrogarden.business.device.core.vo.CircuitId;
+import com.hydrogarden.business.device.core.vo.CircuitState;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

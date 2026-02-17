@@ -1,9 +1,14 @@
 package com.hydrogarden.business.device.core.entity;
 
+import com.hydrogarden.business.common.entity.HydrogardenAgreggateRoot;
+import com.hydrogarden.business.common.vo.DeviceId;
 import com.hydrogarden.business.device.core.commands.*;
+import com.hydrogarden.business.device.core.enums.DeviceState;
 import com.hydrogarden.business.device.core.event.KeepaliveSentDE;
 import com.hydrogarden.business.device.core.event.RegisteredDeviceShutdownDE;
 import com.hydrogarden.business.device.core.event.RegisteredDeviceStartDE;
+import com.hydrogarden.business.device.core.vo.CircuitId;
+import com.hydrogarden.business.device.core.vo.CircuitState;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.util.Assert;

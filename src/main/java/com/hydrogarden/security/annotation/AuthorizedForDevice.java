@@ -1,4 +1,4 @@
-package com.hydrogarden.common;
+package com.hydrogarden.security.annotation;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 

@@ -1,6 +1,7 @@
-package com.hydrogarden.common;
+package com.hydrogarden.security;
 
-import com.hydrogarden.business.device.core.entity.DeviceId;
+import com.hydrogarden.business.common.vo.DeviceId;
+import com.hydrogarden.business.common.vo.UserId;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;

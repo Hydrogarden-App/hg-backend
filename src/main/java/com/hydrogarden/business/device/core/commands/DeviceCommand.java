@@ -1,6 +1,6 @@
 package com.hydrogarden.business.device.core.commands;
 
-import com.hydrogarden.business.device.core.entity.DeviceId;
+import com.hydrogarden.business.common.vo.DeviceId;
 import lombok.Getter;
 
 @Getter

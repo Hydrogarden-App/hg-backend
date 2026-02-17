@@ -1,15 +1,20 @@
-package com.hydrogarden.business.device.app.service;
+package com.hydrogarden.business.device.app.service.impl;
 
-import com.hydrogarden.business.device.core.commands.DeviceCommand;
+import com.hydrogarden.business.common.event.HydrogardenDomainEvent;
+import com.hydrogarden.business.common.vo.DeviceId;
+import com.hydrogarden.business.common.vo.UserId;
+import com.hydrogarden.business.device.app.service.DeviceApplicationService;
 import com.hydrogarden.business.device.core.commands.DeviceContext;
 import com.hydrogarden.business.device.core.commands.InboundDeviceCommand;
 import com.hydrogarden.business.device.core.commands.OutboundDeviceCommand;
 import com.hydrogarden.business.device.core.entity.*;
 import com.hydrogarden.business.device.core.port.out.DeviceOutputPort;
+import com.hydrogarden.business.device.core.vo.CircuitId;
+import com.hydrogarden.business.device.core.vo.CircuitState;
 import com.hydrogarden.business.device.infra.repository.DeviceOwnershipRepository;
 import com.hydrogarden.business.device.infra.repository.DeviceRepository;
 import com.hydrogarden.common.*;
-import jakarta.persistence.EntityManager;
+import com.hydrogarden.security.annotation.AuthorizedForDevice;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

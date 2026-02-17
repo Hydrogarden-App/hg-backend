@@ -1,7 +1,9 @@
-package com.hydrogarden.common;
+package com.hydrogarden.security.filter;
 
 
-import com.hydrogarden.business.device.core.entity.DeviceId;
+import com.hydrogarden.business.common.vo.DeviceId;
+import com.hydrogarden.business.common.vo.UserId;
+import com.hydrogarden.security.UserSecurityModel;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
