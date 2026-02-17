@@ -28,4 +28,9 @@ public class DeviceInfoController implements DeviceInfoApi {
         List<Device> deviceList = this.deviceApplicationService.getDevicesForUser(userId);
         return ResponseEntity.ok(deviceList.stream().map(DeviceMapper.INSTANCE::toDeviceInfo).toList());
     }
+
+    @Override
+    public ResponseEntity<List<DeviceInfoViewModel>> updateDeviceInfo(String deviceId) {
+        return null;
+    }
 }

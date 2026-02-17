@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = { CircuitMapper.class})
+@Mapper(uses = { CircuitMapper.class, DeviceIdMapper.class})
 public interface DeviceMapper {
     DeviceMapper INSTANCE = Mappers.getMapper(DeviceMapper.class);
 
@@ -18,6 +18,5 @@ public interface DeviceMapper {
     @Mapping(target = "lastHeartbeatReceiveTime", source="deviceVitals.lastCommandReceiveTime")
     DeviceVitalsViewModel toDeviceVitals(Device device);
 
-    @Mapping(target = "id", source="id.id")
     DeviceInfoViewModel toDeviceInfo(Device device);
 }
