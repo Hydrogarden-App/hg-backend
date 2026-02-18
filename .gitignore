@@ -201,4 +201,4 @@ README.html
 .idea
 .exercism
 
-./**/application-local.yaml
+application-local.yaml
