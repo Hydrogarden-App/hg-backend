@@ -8,7 +8,9 @@ import com.hydrogarden.business.device.core.entity.Device;
 import com.hydrogarden.business.common.vo.UserId;
 import com.hydrogarden.security.UserSecurityModel;
 import com.hydrogarden.model.DeviceInfoViewModel;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,7 +32,7 @@ public class DeviceInfoController implements DeviceInfoApi {
     }
 
     @Override
-    public ResponseEntity<List<DeviceInfoViewModel>> updateDeviceInfo(String deviceId) {
-        return null;
+    public ResponseEntity<DeviceInfoViewModel> updateDeviceInfo(String deviceId, @Valid DeviceInfoViewModel deviceInfoViewModel) {
+        return ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).body(null);
     }
 }
